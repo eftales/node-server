@@ -19,7 +19,7 @@ build:
     - master # 只对 master 分支进行本操作
   artifacts: # 将 src 目录下的文件保存一下，以备后续步骤使用
       paths:
-      - .
+      - README.md 
 
 # test 阶段
 test:
@@ -35,7 +35,7 @@ test:
     - build # 依赖于 build 阶段保存的文件
   artifacts:
       paths:
-      - . 
+      - README.md 
 
 # release 阶段
 release:
