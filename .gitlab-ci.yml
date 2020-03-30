@@ -42,6 +42,7 @@ release:
   stage: release
   script: 
     - npm install
+    - docker kill node_server
     - docker run -d --name node_server  --rm -p 3000:3000 -v $(pwd):/opt/webapp   node:8.9.4 node /opt/webapp/app.js
   allow_failure: false # 允许失败，web 执行起来之后就停不下来，因此此处必定超时导致失败
   tags: 
