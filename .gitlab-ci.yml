@@ -1,0 +1,53 @@
+# 在任一阶段开始之前执行 echo "嘤嘤嘤"
+before_script:
+  - echo "嘤嘤嘤"
+
+# 说明有哪些阶段
+stages:
+  - build
+  - test
+  - release
+
+# build 阶段
+build:
+  stage: build
+  script:
+    - echo "build"
+  tags: 
+    - aliyunUbuntu16 # 使用名为 aliyunUbuntu16 的gitlab-runner
+  only:
+    - master # 只对 master 分支进行本操作
+  artifacts: # 将 src 目录下的文件保存一下，以备后续步骤使用
+      paths:
+      - .
+
+# test 阶段
+test:
+  stage: test
+  script:
+    - echo "test"
+
+  tags:
+    - aliyunUbuntu16 # 使用名为 aliyunUbuntu16 的gitlab-runner
+  only:
+    - master
+  dependencies:
+    - build # 依赖于 build 阶段保存的文件
+  artifacts:
+      paths:
+      - . 
+
+# release 阶段
+release:
+  stage: release
+  script: 
+    - npm install
+    - docker kill node_server
+    - docker run -d --name node_server  --rm -p 3000:3000 -v $(pwd):/opt/webapp   node:8.9.4 node /opt/webapp/app.js
+  allow_failure: false # 允许失败，web 执行起来之后就停不下来，因此此处必定超时导致失败
+  tags: 
+    - aliyunUbuntu16
+  only:
+    - master
+  dependencies:
+    - test # 依赖于 test 阶段的二进制文件 web
